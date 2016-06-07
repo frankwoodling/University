@@ -1,0 +1,126 @@
+---
+title: 'Lab 10: Bootstrap Bonus Lab'
+author: "Frank Woodling"
+date: "May 12, 2016"
+output: pdf_document
+---
+
+# 1.
+```{r}
+GPA <- read.delim("C:/Users/Frank/Desktop/STAT 3480/Lab 10/GPA.txt")
+
+
+attach(GPA)
+
+summary(lm(CollGPA~SAT))
+```
+The equattion is Y = 0.0018*SAT + 0.1520. For each 0.00018020 increase in the SAT score their GPA will increase by 1.
+
+# 2.
+```{r}
+### create our data and calculate thetahat, the slope of the regression line
+oursample = GPA
+thetahat = lm(CollGPA ~ SAT, data=oursample)$coeff[2]
+thetahat
+thetahat.b = rep(NA,1000)
+for (i in 1:1000) {
+### draw the bootstrap sample and calculate thetahat.b
+index = 1:100
+bootindex = sample(index, 100, replace=T)
+bootsample = oursample[bootindex,]
+thetahat.b[i] = lm(CollGPA ~ SAT, data=bootsample)$coeff[2]
+}
+
+
+### draw the bootstrap sample
+index = 1:100
+bootindex = sample(index, 100, replace=T)
+bootsample = oursample[bootindex,]
+bootsample
+```
+We can look at the bootindex and seee if the same index is repeated twice.  In my case I see both 1 and 6 repeated.
+
+# 3.
+```{r}
+hist(thetahat.b)
+quantile(thetahat.b, .025); quantile(thetahat.b, .975)
+```
+Out of an infinite amount of confidence intervals 95% of bootstrap intervals will fall between 0.001126614 and 0.002549624.
+
+# 4.
+It would be equal to .05, so 95% of intervals would bracket the true mean.
+
+# 5.
+```{r}
+quantile(thetahat.b, .005); quantile(thetahat.b, .995)
+```
+The interval is between 0.0009297782 and 0.002757923 so the p-value would have to be less than 0.01.  We can say than of an infinite amount of bootstraps 99% are between that interval.
+
+# 6.
+It would have to contain 99% if all sample's means to be a 99% confidence interval.
+
+
+# 7.
+```{r}
+detach(GPA)
+GPAfull <- read.csv("C:/Users/Frank/Desktop/STAT 3480/Lab 10/GPA_full.txt", sep="")
+attach(GPAfull)
+
+summary(lm(CollGPA ~ SAT + HSGPA))
+```
+I am getting some strange regression results.  It lists 30 different coefficients for SAT.  No matter how I change it there are a ton of different SAT coefficients.
+
+
+# 8. 
+```{r}
+### create our data
+oursample = GPAfull
+SATthetahat = lm(CollGPA ~ SAT + HSGPA + Rec, data=oursample)$coeff[2]
+HSGPAthetahat = lm(CollGPA ~ SAT + HSGPA + Rec, data=oursample)$coeff[3]
+Recthetahat = lm(CollGPA ~ SAT + HSGPA + Rec, data=oursample)$coeff[4]
+SATthetahat; HSGPAthetahat; Recthetahat
+SATthetahat.b = rep(NA,1000); HSGPAthetahat.b = rep(NA,1000); Recthetahat.b = rep(NA,1000)
+for (i in 1:1000) {
+### draw the bootstrap sample and calculate thetahat.b
+index = 1:100
+bootindex = sample(index, 100, replace=T)
+bootsample = oursample[bootindex,]
+SATthetahat.b[i] = lm(CollGPA ~ SAT + HSGPA + Rec, data=bootsample)$coeff[2]
+HSGPAthetahat.b[i] = lm(CollGPA ~ SAT + HSGPA + Rec, data=bootsample)$coeff[3]
+Recthetahat.b[i] = lm(CollGPA ~ SAT + HSGPA + Rec, data=bootsample)$coeff[4]
+}
+par(mfrow=c(1,3))
+hist(SATthetahat.b); hist(HSGPAthetahat.b); hist(Recthetahat.b)
+quantile(SATthetahat.b, .025); quantile(SATthetahat.b, .975)
+quantile(HSGPAthetahat.b, .025); quantile(HSGPAthetahat.b, .975)
+quantile(Recthetahat.b, .025); quantile(Recthetahat.b, .975)
+```
+
+# 9.
+In only one interval does the confidence interval bracket 0.  
+
+# 10.
+```{r}
+quantile(SATthetahat.b, .025);
+quantile(SATthetahat.b, .975)
+quantile(HSGPAthetahat.b, .025); quantile(HSGPAthetahat.b, .975)
+quantile(Recthetahat.b, .025); 
+quantile(Recthetahat.b, .975)
+```
+
+# This lab does not give enough information to answer this problem.  As we reduce the confidence level our confidence interval decreases.
+
+
+# Summary
+```{r}
+fit = lm(CollGPA ~ SAT + HSGPA + Rec)
+summary(fit)
+predict(fit, GPAfull, interval="confidence") 
+```
+SAT scores, high school GPA, and number of positive recommendation letters are all positive indicators of college GPA.
+
+
+CI(lm(CollGPA ~ SAT + HSGPA + Rec))
+
+
+

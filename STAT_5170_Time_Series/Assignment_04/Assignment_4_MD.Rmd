@@ -1,0 +1,64 @@
+---
+title: "Assignment 4"
+author: "Frank Woodling"
+date: "February 17, 2016"
+output: pdf_document
+---
+
+# 3.
+# a.
+```{r}
+engtemp <- scan("tpmon.dat",skip=1)
+par(mfrow=c(2,1))
+plot.ts(engtemp, main = "monthly temperature (C) of England, 1723 to 1970", ylab = " temperature")
+acf(engtemp, main = "Autocorrelation Function of monthly temperature of England")
+
+par(mfrow=c(2,1))
+engtemp2 <- engtemp[1:300]
+plot.ts(engtemp2, main = "first 300 observations monthly temp (C) of England, 1723 to 1970",
+        ylab = " temperature")
+acf(engtemp2, main = "Autocorrelation Function of monthly temperature of England")
+```
+As with all temperature data sets there is a clear seasonal trend.  The lines of the time series go up and down throughout the year (roughly from 15 C maximum to 3 C minimum).  Neither plot is stationary, and both show the same trend on the ACF plot.
+
+# b.
+```{r }
+b2 <- cos(2*pi*(1/12)*(1:length(engtemp)))
+b3 <- sin(2*pi*(1/12)*(1:length(engtemp)))
+ols.b <- lm(engtemp~b2+b3)
+ols.b
+```
+
+# c.
+```{r}  
+par(mfrow=c(2,1))
+plot.ts(ols.b$residuals, main = "Residual plot of B1 + B2*cos(2*pi*(1/12)*t + B3*sin(2*pi*(1/12)",
+     ylab = "residuals")
+acf(ols.b$residuals, main = "ACF plot of B1 + B2*cos(2*pi*(1/12)*t + B3*sin(2*pi*(1/12)")
+```
+
+The residuals seem to show a very similar pattern as before.  The ACF plot shows that the residuals are not stationary either.  They look closer than before, but they still do not decay enough.
+
+# d.
+The trend is much smaller, but it is still there.  The residual plot looks like the exact same pattern as before.  Looking at the ACF we can see that it is closer to stationary, but the seasonality trend is still there.
+
+# 4.
+```{r}
+globtemp <- scan("globtemp.dat")
+plot(globtemp, main = "global temperature data points with moving average smoothing lines",
+                 ylab = "temperature")
+
+line1 <- filter(globtemp,sides=2,rep(1,25)/25)
+line2 <- filter(globtemp,sides=2,rep(1,13)/13)
+line3 <- filter(globtemp,sides=2,rep(1,3)/3)
+
+lines(line1, lty=1, col="red")
+lines(line2, lty=2, col="blue")
+lines(line3, lty=3, col="black")
+
+legend("topleft", c("25 bandwidth","13 bandwidth", "3 bandwidth" ),
+       lty=c(1,2,3),
+       col=c("red","blue", "black"))
+```
+The effect of both undersmoothing and oversmoothing is that we lose some information about the trend.  We can see that all three lines show a increasing trend.  One example is around 55 where the line using a bandwidth of 25 completely missed a huge dip that the other two lines captured. 
+The 3 bandwidth line is barely an improvement over just plotting the original data as a time series.  The 13 bandwidth line is in the middle of the other two and seems to be the correct amount of smoothing.

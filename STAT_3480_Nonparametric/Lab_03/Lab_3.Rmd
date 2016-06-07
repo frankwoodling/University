@@ -1,0 +1,171 @@
+---
+title: "Lab 3"
+author: "Frank Woodling"
+date: "February 11, 2016"
+output: pdf_document
+---
+
+# 1.
+```
+| obs   | rank |
+|-------|------|
+| -10.7 | 1    |
+|  7.2  | 2    |
+|  11.6 | 3    |
+|  21.8 | 4    |
+|  25.2 | 5    |
+
+```
+$W_{obs} = 2 + 1 + 4 = 7$
+
+# 2 & 3.
+```
+|  deprived | undeprived |  W |
+|----------:|:----------:|---:|
+|   3, 4, 5 |    1, 2    | 12 |
+|   2, 4, 5 |    1, 3    | 11 |
+|   2, 3, 5 |    1, 4    | 10 |
+|   2, 3, 4 |    1, 5    |  9 |
+|   1, 4, 5 |    2, 3    | 10 |
+|   1, 3, 5 |    2, 4    |  9 |
+|   1, 3, 4 |    2, 5    |  8 |
+|   1, 2, 5 |    3, 4    |  8 |
+|   1, 2, 4 |    3, 5    |  7 |
+|   1, 2, 3 |    4, 5    |  6 |
+```
+# 4.
+$P(W_{obs} \geq W) = \frac{2}{10} = 0.2$
+
+# 5.
+There is not enough evidence to support visual learning being worse while sleep deprived.  We fail to reject the null hypothesis.
+
+# 6.
+Since the previous p-value was single-tailed, a two-tailed p-value would be double the original.  So the p-value would be 0.4.  We fail to reject the null hypothesis
+
+# 7.
+The loop creates a vector of the sum of ranks rather than the difference as in the permutation test.  The W.obs variable does the same, it sums ranks.
+
+# 8.
+```{r}
+library('gtools')
+group <- c('deprived', 'deprived', 'deprived', 'undeprived', 'undeprived')
+chg_perf <- c(7.2, -10.7, 21.8, 25.2, 11.6)
+perf <- data.frame(group,chg_perf)
+names(perf) <- c('group', 'performance')
+
+ranks = rank(perf$performance)
+W.obs = sum(ranks[perf$group=="deprived"])
+
+deprived.ranks = combinations(5, 3, v=ranks, set=F, repeats.allowed=F)
+
+W = rep(NA, choose(5,3))
+
+for(i in 1:choose(5,3)){
+  W[i] = sum(deprived.ranks[i,])
+}
+sum(W <= W.obs)/choose(5,3)
+```
+
+# 9.
+```{r}
+library('gtools')
+group <- c('deprived', 'deprived', 'deprived', 'undeprived', 'undeprived')
+chg_perf <- c(7.2, -10.7, 21.8, 25.2, 11.6)
+perf <- data.frame(group,chg_perf)
+names(perf) <- c('group', 'performance')
+
+ranks = rank(perf$performance)
+W.obs = sum(ranks[perf$group=="deprived"])
+
+deprived.ranks = combinations(5, 3, v=ranks, set=F, repeats.allowed=F)
+
+W = rep(NA, choose(5,3))
+
+for(i in 1:choose(5,3)){
+  W[i] = sum(deprived.ranks[i,])
+}
+sum(W != W.obs)/choose(5,3)
+```
+
+# 10.
+```{r}
+setwd("C:/Users/Frank/Desktop/STAT 3480/Lab 3")
+sleepdep <- read.table('sleepdep.txt', header=T)
+rank(sleepdep$performance)
+```
+If multiple values are equal it will take the average of them an assign that average as the rank for all of them.  
+
+# 11. 
+```{r}
+setwd("C:/Users/Frank/Desktop/STAT 3480/Lab 3")
+sleepdep <- read.table('sleepdep.txt', header=T)
+
+names(sleepdep) <- c('group', 'performance')
+
+ranks = rank(sleepdep$performance)
+W.obs = sum(ranks[group=="deprived"])
+
+deprived.ranks = combinations(21, 11, v=ranks, set=F, repeats.allowed=F)
+
+W = rep(NA, choose(21,11))
+
+for(i in 1:choose(21,11)){
+  W[i] = sum(deprived.ranks[i,])
+}
+sum(W >= W.obs)/choose(21,11)
+```
+We can reject the null hypothesis with a p-value of 0.04764173.  We can conclude that the sleep-deprived group performs worse than the undeprived group.
+
+
+# 12.
+```{r}
+setwd("C:/Users/Frank/Desktop/STAT 3480/Lab 3")
+sleepdep <- read.table('sleepdep.txt', header=T)
+
+names(sleepdep) <- c('group', 'performance')
+
+ranks = rank(sleepdep$performance)
+W.obs = sum(ranks[group=="deprived"])
+
+deprived.ranks = combinations(21, 11, v=ranks, set=F, repeats.allowed=F)
+
+W = rep(NA, choose(21,11))
+
+for(i in 1:choose(21,11)){
+  W[i] = sum(deprived.ranks[i,])
+}
+sum(W <= W.obs)/choose(21,11)
+```
+With a p-value of 0.9562963 we fail to reject the null hypothesis.  We can conclude that the sleep-deprived group does not perform better.
+
+# 13.
+Using a table for two-sided Wilcoxon we want to look for values less than 75 or greater than 123 if we are using a 0.05 significance level.
+
+```{r}
+setwd("C:/Users/Frank/Desktop/STAT 3480/Lab 3")
+sleepdep <- read.table('sleepdep.txt', header=T)
+
+names(sleepdep) <- c('group', 'performance')
+
+ranks = rank(sleepdep$performance)
+W.obs = sum(ranks[group=="deprived"])
+
+deprived.ranks = combinations(21, 11, v=ranks, set=F, repeats.allowed=F)
+
+W = rep(NA, choose(21,11))
+
+for(i in 1:choose(21,11)){
+  W[i] = sum(deprived.ranks[i,])
+}
+sum(W > 123)/choose(21,11) + sum(W < 75)/choose(21,11)
+```
+With a p-value of 0.4397561 we fail to reject the null hypothesis.  Judging from the previous tests this seem incorrect, but if it were correct we could conclude there is no difference between the two groups at a 0.05 level.
+
+# Summary
+# 1.
+My results are all over the place.  I would assume at least one of these answers is incorrect.  My best guess is 11 is correct and maybe 12.  In the test for number 11 we were able to reject the null hypothesis concluding that the sleep-deprived group performs worse.  Number 12 swaps it and asks if the sleep-deprived group performs better.  As expected we were unable to reject the null hypothesis.  This backs up the previous test, implying the sleep-deprived group does actually perform worse.  
+
+# 2.
+If we swap the >= sign to <= it will cover the exact opposite portion as the previous test.  For example on numbers 1-3 we originally used 7 and looked for numbers that 7 was greater than or equal two.  We found 2/10.  If we summed the deprived we would begin with 8 which covers 8/10.
+
+

@@ -1,0 +1,169 @@
+---
+title: Assignment 3
+author: "Frank Woodling"
+date: "February 10, 2016"
+output: pdf_document
+---
+
+# 1.
+# a.
+
+```{r}
+berk <- scan("berkeley.dat", what=list(double(0),double(0),double(0)))
+time <- berk[[1]]
+berkeley <- berk[[2]]
+stbarb <- berk[[3]]
+```
+
+
+```{r, echo=T}
+par(mfrow=c(3,1))
+plot.ts(berkeley)
+plot.ts(stbarb)
+plot(berkeley~stbarb)
+```
+
+# b.
+```{r}
+timefit <- lm(berkeley~time)
+anova(timefit)
+summary(timefit)
+AIC(timefit)
+```
+
+
+```{r, echo=T}
+par(mfrow=c(3,1))
+timeres <- residuals(timefit)
+plot(timeres)
+abline(h=0, col="red")
+acf(timeres)
+qqnorm(timeres)
+qqline(timeres, col="red")
+```
+The residuals seem very uniform, but may have a trend in them.  The ACF decays quickly and looks to be stationary
+The Q-Q plot shows that the data is mostly normal.  The tails have a couple of outliers.
+
+# c.
+```{r}
+timefit <- lm(berkeley~stbarb)
+anova(timefit)
+summary(timefit)
+AIC(timefit)
+```
+
+```{r}
+par(mfrow=c(3,1))
+timeres <- residuals(timefit)
+plot(timeres)
+abline(h=0, col="red")
+acf(timeres)
+qqnorm(timeres)
+qqline(timeres, col="red")
+```
+The residuals seem uniform in this as well.  Again they do not seem to be completely random.  There is an undulating trend.
+The R-squared is .4015, so there is at least some correlation between the two variables.
+
+# d.
+```{r}
+plot.new()
+par(mfrow=c(2,1))
+plot.ts(berkeley, main = "Time Series of Berkeley data")
+acf(berkeley, main = "ACF of Berkeley data")
+```
+Many sections of the ACF plot are crossing the significance line.  It seems to be decaying, but it does not look stationary.
+
+# e.
+```{r}
+berk.diff <- diff(berkeley)
+par(mfrow=c(2,1))
+plot(berk.diff, main = "Berkeley plot after differencing")
+abline(0, 0)
+acf(berk.diff, main = "Berkeley ACF after differencing")
+```
+The data is much closer to being stationary after differencing, however, many of the lines still cross the dotted line.
+Even after differencing the series is still not stationary.
+
+# f.
+
+
+
+
+
+
+# 2.
+# a.
+
+```{r}
+ibm <- scan("dailyibm.dat", skip = 1)
+par(mfrow=c(2,1))
+plot(ibm, main = "IBM closing stock price Jan 1, 1980 to Oct 8, 1992", ylab = "closing stock price")
+acf(ibm, main = "ACF plot of IBM closing stock prices")
+```
+The time series is not stationary since the autocorrelations do not decay to zero.
+You can see in the first plot there is a constant upward trend.
+
+# b.
+```{r}
+ibm.diff <- diff(ibm)
+par(mfrow=c(2,1))
+plot(ibm.diff, main = "Differenced IBM closing stock price Jan 1, 1980 to Oct 8, 1992", ylab = "closing stock price")
+acf(ibm.diff, main = "Diffenced ACF plot of IBM closing stock prices")
+```
+The data decayed to within the boundaries quickly.  The differenced time series data is stationary.
+
+# c.
+```{r}
+ibm.log <- log(ibm)
+par(mfrow=c(2,1))
+plot(ibm.log, main = "Log plot IBM closing stock price Jan 1, 1980 to Oct 8, 1992", ylab = "closing stock price")
+acf(ibm.log, main = "Log ACF plot of IBM closing stock prices")
+```
+The data looks very similar to the initial plot, even though the new values are much smaller.
+The data is not stationary since it does not decay at all.
+
+# d.
+```{r}
+difflogibm <- diff(log(ibm))
+par(mfrow=c(2,1))
+plot(difflogibm , main = "Differenced Log plot IBM closing stock price Jan 1, 1980 to Oct 8, 1992", ylab = "closing stock price")
+acf(difflogibm , main = "Differenced Log ACF plot of IBM closing stock prices")
+```
+Taking the difference first removes the trend, so there would be many points with zero change from the previous.
+Since you cannot take the log of 0, it would be impossible to plot.  Taking the log first the data is mostly
+stationary except from the few outliers mentioned.  There is no discernable trend, and the ACF plot decays quickly.
+
+# e.
+```{r}
+difflogibm <- difflogibm[difflogibm > -0.1]
+
+par(mfrow=c(2,1))
+plot(difflogibm , main = "Differenced Log plot IBM closing stock price with outliers removed", ylab = "closing stock price")
+acf(difflogibm , main = "Differenced Log ACF plot of IBM closing stock prices with outliers removed")
+
+difflogibm1 <- difflogibm[1:500]
+
+par(mfrow=c(2,1))
+plot(difflogibm1, main = "First 500 values of Differenced Log plot IBM closing stock price with outliers removed", ylab = "closing stock price")
+acf(difflogibm1, main = "First 500 values of Differenced Log ACF plot of IBM closing stock prices with outliers removed")
+
+difflogibm2 <- difflogibm[501:length(difflogibm)]
+
+par(mfrow=c(2,1))
+plot(difflogibm2, main = "Remaining values of Differenced Log plot IBM closing stock price with outliers removed", ylab = "closing stock price")
+acf(difflogibm2, main = "Remaining values of Differenced Log ACF plot of IBM closing stock prices with outliers removed")
+```
+The price values of the second graph are double the first.  The plots seem similar, except there are much fewer points in the first plot. Both ACFs seem to decay quickly, and are stationary.  The ACFs seem slightly better than before we split them up.
+
+# f.
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,55 @@
+---
+title: "Assignment 8"
+author: "Frank Woodling"
+date: "April 11, 2016"
+output: pdf_document
+---
+
+# 2.
+```{r}
+data <- read.table("labour.dat")
+labour <- data[1:144,]
+
+plot.ts(labour, main="Time Series Plot for Labour Force")
+plot.ts(diff(labour), main="Time Series Plot for Labour Force, Differenced")
+
+labour.log <- log(labour)
+
+plot.new()
+par(mfrow=c(1,2))
+plot.ts(diff(labour.log), main="Time Series Plot for Differenced of Logarithm")
+plot.ts(diff(labour.log,12), main="Time Series Plot for Seasonal Differenced of Logarithm")
+
+par(mfrow=c(1,1))
+plot.ts(diff(diff(labour.log),12), main="Time Series Plot with both regular and seasonal diff")
+
+par(mfrow=c(1,2))
+acf(diff(diff(labour.log),12),36, xlim=c(1,36), ylim=c(-0.5,1), main="ACF with both regular and seasonal differencing")
+pacf(diff(diff(labour.log),12),36, ylim=c(-0.5,1), main="PACF with both regular and seasonal differencing")
+
+source("sarima.R")
+
+# fit1<-sarima(labour.log,1,1,1,1,1,1,12)
+# fit2<-sarima(labour.log,1,1,2,1,1,2,12)
+# fit3<-sarima(labour.log,2,1,2,2,1,2,12)
+# fit4<-sarima(labour.log,2,1,1,2,1,1,12)
+# fit5<-sarima(labour.log,1,1,1,1,1,2,12)
+# fit6<-sarima(labour.log,0,1,2,0,1,2,12)
+fit7<-sarima(labour.log,0,1,1,0,1,1,12)
+
+# f1.cri<-c(fit1$AIC,fit1$AICc,fit1$BIC)
+# f2.cri<-c(fit2$AIC,fit2$AICc,fit2$BIC)
+# f3.cri<-c(fit3$AIC,fit3$AICc,fit3$BIC)
+# f4.cri<-c(fit4$AIC,fit4$AICc,fit4$BIC)
+# f5.cri<-c(fit5$AIC,fit5$AICc,fit5$BIC)
+# f6.cri<-c(fit6$AIC,fit6$AICc,fit6$BIC)
+f7.cri<-c(fit7$AIC,fit7$AICc,fit7$BIC)
+
+fit7 # best AIC & BIC
+
+sarima.for(labour.log,12,0,1,1,0,1,1,12)
+
+all_labour<-data$V1
+lines(144:156, log(all_labour[144:156]), type="b")
+```
+The ACF and PACF suggested that AR and MA could be 0, 1, or 2.  All models checked seemed to pass the diagnostic plots so I moved to AIC and BIC coefficients. The best model was $(0,1,1)(0,1,1)_{12}$.  After checking that this model was less than 1.96 z-score I went to forecasting.  In forecasting the data all, but a single point fall within the prediction intervals.  With a 95% prediction interval we would expect some points to fall outside the interval. 

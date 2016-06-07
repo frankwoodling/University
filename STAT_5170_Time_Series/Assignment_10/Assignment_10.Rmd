@@ -1,0 +1,60 @@
+---
+title: "Assignment 10"
+author: "Frank Woodling"
+date: "April 29, 2016"
+output: pdf_document
+---
+
+# 2.
+# a.
+
+```{r}
+source("armasim.R")
+x<-armasim(c(0.8),0,1,200)
+
+source("A10function.R")
+specplot(spec.pgram(x,taper=0, log="no"),phi=c(0.8))
+
+smooth = 4
+k.mod<-kernel("modified.daniell",c(smooth,smooth))
+specplot2(spec.pgram(x, k.mod,taper=0, log="no"), phi=c(0.8))
+```
+I found that setting the kernel equal to 4 gave a good estimate of the spectral density.  The start of the graph is the hardest point to capture correctly, and increasing the kernel does not seem to help.
+
+# b.
+```{r}
+x<-armasim(c(0.8),0,1,400)
+
+specplot(spec.pgram(x,taper=0, log="no"),phi=c(0.8))
+
+smooth = 10
+k.mod<-kernel("modified.daniell",c(smooth,smooth))
+specplot10(spec.pgram(x, k.mod,taper=0, log="no"), phi=c(0.8))
+```
+It requires a larger kernel when I double the sample size.  I found that anything greater than a kernel of 10 gives a good spectral density estimate, although it is still hard to estimate the start of the plot.  
+
+
+
+# 3.
+# a.
+```{r}
+airline<-scan("airline.dat")
+tairline<-diff(diff(log(airline),12))
+
+specplot.i=function(pgram,phi=0,theta=0,sigsq=1)
+{
+	lines(pgram[[1]],spectraldensity(pgram[[1]],phi,theta,sigsq),col="red", main = c("Smoothed plot with kernel = ", i))
+}
+	
+plot.new()
+par(mfrow=c(2,4))
+for(i in 1:8)
+{
+  k.mod<-kernel("modified.daniell",c(i,i))
+  specplot.i(spec.pgram(x, k.mod,taper=0, log="no"), phi=c(0.8))
+}
+```
+I think the best smoothed periodogram is at kernel 7 or 8.  As in the previous problem the start of the plot is not captured until I use a larger kernel.  If I ignore than part of the plot it gives a good estimate as early as kernel 4 or 5.
+
+# b.
+As m goes from 1 to 8 the greatest spikes in the plot are affected the most as I increase m.  After m = 4 most of the spikes are completely gone, and the higher kernel smoothings are incremental, instead of big changes as before.  We lose a lot of information after around m = 4.

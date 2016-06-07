@@ -1,0 +1,174 @@
+---
+title: "Exam 2"
+author: "Frank Woodling"
+date: "April 10, 2016"
+output: word_document
+---
+
+# Summary Statistics
+
+```{r}
+# Read in datasets
+internal <- read.table('Internal+Research+-+WCtY+Time+Data.txt', header = T)
+state <- read.delim("C:/Users/Frank/Desktop/STAT 3480/Exam II/State+Test+Data.txt", header=T)
+wecometoyou <- read.delim("C:/Users/Frank/Desktop/STAT 3480/Exam II/wcty.txt", header=T)
+
+
+
+# Summary statistics and plots of We Come to You data
+attach(wecometoyou)
+summary(wcty[1:6])
+
+
+# Summary statistics and plots for state data
+state.comb <- c(state[1:11,1], state[1:12,2], state[1:9,3], state[1:11,4], state[1:12,5], state[1:11,6])
+summary(state.comb)
+summary(state)
+
+par(mfrow=c(1,2))
+qqnorm(state.comb, main = "Q-Q Plot of State Test Data")
+qqline(state.comb)
+hist(state.comb, breaks = 30, 
+     main = "Histogram of State Test Data",
+     xlab = "Test scores")
+
+par(mfrow=c(1,1))
+boxplot(state, names = c("Our State","State 1", "State 2", "State 3", "State 4", "State 5"),
+        ylab = "Test Scores",
+        main = "Boxplot of State Testing Data")
+
+# Summary statistics and plots for internal time data
+internal.comb <- c(internal[1:10,1], internal[1:10,2], internal[1:10,3], internal[1:10,4], internal[1:10,5])
+summary(internal.comb)
+summary(internal)
+
+par(mfrow=c(1,2))
+qqnorm(internal.comb, main = "Q-Q Plot of Internal Research Time Data")
+qqline(internal.comb)
+hist(internal.comb, breaks = 15,
+     main = "Histogram Internal Research Time Data",
+     xlab = "Test scores")
+
+par(mfrow=c(1,1))
+boxplot(internal, names = c("< 30 min","60 min", "90 min", "120 min", "180 min"),
+        ylab = "Test Scores",
+        xlab = "Approximate time spent",
+        main = "Boxplot of Internal Research Time Data")
+
+```
+
+
+```{r}
+#####################################
+### Permutation Test on Deviances ###
+#####################################
+data.2 = read.csv('region_state_rates.csv', header = T)
+attach(data.2)
+
+test.deviance = function(trt1,trt2)
+{
+  dev1 = trt1 - median(trt1);
+  dev2 <- trt2 - median(trt2)
+  all = c(dev1, dev2)
+  index = seq(along=all)
+  indexIntrt1 = combn(index, 3)
+  RMD = NULL
+  
+  for(i in 1:dim(indexIntrt1)[2])
+  {
+    RMD[i] = mean(abs(all[indexIntrt1[, i]]))/mean(abs(all[-indexIntrt1[, i]]))
+  }
+  
+  p_value = sum(RMD >= RMD[1])/length(RMD)
+  p_value
+}
+
+regions = list(0,0,0,0)
+
+for (i in 1:4)
+{
+  regions[[i]] = data.2[[i]][!is.na(data.2[i])]
+}
+
+p.values.list = NULL
+
+for (i in 1:4)
+{
+  for(j in 1:4)
+  {
+    p.values.list = c(p.values.list, test.deviance(regions[[i]],regions[[j]]))
+  }
+}
+
+min(p.values.list)<=0.05
+min(p.values.list)
+```
+
+
+# RMD
+
+```{r}
+# RMD
+state.order <- state.comb
+rmd.x <- state.order[12:23]
+rmd.y <- state.order[1:11]
+
+dev.x <- rmd.x - median(rmd.x)
+dev.y <- rmd.y - median(rmd.y)
+rmd.1 <- sum(abs(dev.x))/length(rmd.x)
+rmd.2 <- sum(abs(dev.y))/length(rmd.y)
+rmd.obs = rmd.1/rmd.2
+
+rmd.comb <- c(rmd.x, rmd.y)
+rmd.all <- rep(0, 100)
+
+for(i in 1:100)
+{
+  rmd.samp <- sample(rmd.comb)
+  dev.x <- rmd.samp[1:length(rmd.x)] - median(rmd.x)
+  dev.y <- rmd.samp[1:length(rmd.y)] - median(rmd.y)
+  rmd.1 <- sum(abs(dev.x))/length(rmd.x)
+  rmd.2 <- sum(abs(dev.y))/length(rmd.y)
+  rmd.all[i] = rmd.1/rmd.2
+}
+
+sum(rmd.all >= rmd.obs)/100
+```
+
+
+# Bonferroni and Kruskal-Wallis
+```{r}
+# Bonferroni adjustment
+state.adj = .05/((6*(5)/2))
+state.adj 
+
+internal.adj = .05/((5*(4)/2))
+internal.adj
+
+kruskal.test(state)
+# 	  Kruskal-Wallis rank sum test
+# 
+# data:  state
+# Kruskal-Wallis chi-squared = 29.858, df = 5, p-value = 1.573e-05
+
+
+kruskal.test(internal)
+#     Kruskal-Wallis rank sum test
+# 
+# data:  internal
+# Kruskal-Wallis chi-squared = 7.5586, df = 4, p-value = 0.1092
+
+state.order <- read.csv("state_ordered.csv", header=T)
+state.order.r1 <- state.order[,1]
+names(state.order.r1) <- state.order[,2]
+
+state.rank <- rank(state.order.r1)
+state.rank
+
+```
+
+
+
+
+
+

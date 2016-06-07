@@ -1,0 +1,63 @@
+---
+title: "Assignment 6"
+author: "Frank Woodling"
+date: "March 25, 2016"
+output: pdf_document
+---
+
+# 1.
+# a.
+```{r}
+source("armasim.R")
+x1 <- armasim(c(0.6, -.8),c(0),1,10000)
+
+par(mfrow=c(1,2))
+acf(x1, 20, xlim=c(1,20), ylim=c(-0.5,0.5), main="ACF")
+pacf(x1, 20, ylim=c(-0.5,0.5), main="PACF")
+```
+
+# b.
+```{r}
+x2 <- armasim(c(0),c(.8, 1.1),1,10000)
+
+par(mfrow=c(1,2))
+acf(x2, 20, xlim=c(1,20), ylim=c(-0.4,0.4), main="ACF")
+pacf(x2, 20, ylim=c(-0.4,0.4), main="PACF")
+```
+
+# c.
+```{r}
+x3 <- armasim(c(.8),c(.8),1,10000)
+
+par(mfrow=c(1,2))
+acf(x3, 20, xlim=c(1,20), ylim=c(-0.5,0.5), main="ACF")
+pacf(x3, 20, ylim=c(-0.5,0.5), main="PACF")
+```
+
+# 2.
+```{r}
+berk <- scan("berkeley.dat", what=list(double(0),double(0),double(0)))
+time <- berk[[1]]
+berkeley <- berk[[2]]
+stbarb <- berk[[3]]
+
+berk_diff <- diff(berkeley)
+stbarb_diff <- diff(stbarb)
+
+par(mfrow=c(1,2))
+acf(berkeley, 20, xlim=c(1,20), ylim=c(-0.4,0.4), main="Berkeley ACF")
+pacf(berkeley, 20, ylim=c(-0.4,0.4), main="Berkeley PACF")
+
+par(mfrow=c(1,2))
+acf(stbarb, 20, xlim=c(1,20), ylim=c(-0.4,0.4), main="Santa Barbara SACF")
+pacf(stbarb, 20, ylim=c(-0.4,0.4), main="Santa Barbara PACF")
+
+par(mfrow=c(1,2))
+acf(berk_diff, 20, xlim=c(1,20), ylim=c(-.5,.5), main="Berkeley Differenced SACF")
+pacf(berk_diff, 20, ylim=c(-.5,.5), main="Berkeley Differenced PACF")
+
+par(mfrow=c(1,2))
+acf(stbarb_diff, 20, xlim=c(1,20), ylim=c(-.5,.5), main="Santa Barbara Differenced SACF")
+pacf(stbarb_diff, 20, ylim=c(-.5,.5), main="Santa Barbara Differenced PACF")
+```
+

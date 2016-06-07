@@ -1,0 +1,21 @@
+---
+title: "Assignment 9"
+author: "Frank Woodling"
+date: "April 22, 2016"
+output: pdf_document
+---
+
+```{r}
+power.ma1<-function(theta,sigsq,omega)
+{
+  (16/75)*((2+cos(2*pi*omega))/(1.25+cos(2*pi*omega)))+(44/75)
+}
+
+
+par(mfrow=c(1,1))
+frequency<-seq(0,0.5,by=0.01)
+power1<-power.ma1(0.9,1,frequency)
+plot(frequency,power1, type="l", main="Power spectrum for ARMA(1,1)")
+
+```
+

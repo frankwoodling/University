@@ -1,0 +1,12 @@
+obs treatment
+1 t1
+3 t1
+5 t1
+7 t1
+2 t2
+4 t2
+6 t2
+8 t2
+
+
+

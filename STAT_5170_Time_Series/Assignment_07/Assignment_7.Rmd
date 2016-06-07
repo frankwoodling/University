@@ -1,0 +1,87 @@
+---
+title: "Assignment 7"
+author: "Frank Woodling"
+date: "April 4, 2016"
+output: pdf_document
+---
+
+
+# 1.
+```{r}
+x.1 <- matrix(c(1382.2, 1114.4,
+                1114.4, 1382.2)
+                ,nrow = 2, ncol = 2)
+
+x.2 <- matrix(c(1114.4, 591.73), nrow = 2, ncol = 1)
+
+x.1.inv <- solve(x.1)
+x.1.inv%*%x.2
+
+var_w <- 1382.2-1.3175495*1114.4+0.6341682*591.73
+var_w
+```
+Yule-walker estimates: 
+
+$\phi_{1} = 1.3175495$
+
+$\phi_{2} = -0.6341682$
+
+$\sigma_{w}^{2} = 289.1792$
+
+
+
+# 2.
+# a.
+```{r}
+source('sarima.R')
+
+cow_temp <- scan("cow.dat")
+cow <- ts(cow_temp)
+
+par(mfrow=c(1,3))
+plot(cow, main="Time Series of cow morning temperature readings")
+acf(cow, 20, xlim=c(1,20), ylim=c(-0.2,0.5),  main="ACF of Cow Temp")
+pacf(cow, ylim=c(-0.2,0.5), main="PACF of Cow Temp")
+
+dcow <- diff(cow)
+par(mfrow=c(1,3))
+plot(dcow, main="First diff time series of cow temp readings")
+acf(dcow, 20, xlim=c(1,20), ylim=c(-0.5,0.5),  main="First diff ACF of Cow Temp")
+pacf(dcow, ylim=c(-0.5,0.5), main="First diff PACF of Cow Temp")
+
+fit1<-sarima(dcow, 1,0,0)
+
+par(mfrow=c(1,1))
+qqnorm((fit1$fit)$resid)
+qqline((fit1$fit)$resid, col="red")
+
+```
+The time series was not stationary from the start, but a differenced plot looks close to stationary. An AR(1) models seem to fit this data well.  The p-values are constant, and no longer show a pattern.  The Q-Q plot also seems mostly normal aside from one outlier.  In the other models the tails were curved.
+
+
+# 2.
+# b.
+```{r}
+bicoal <- scan("bicoal.dat")
+coal <- ts(bicoal)
+
+par(mfrow=c(1,3))
+plot(coal, main="Time Series of cow morning temperature readings")
+acf(coal, 20, xlim=c(1,20), ylim=c(-0.2,0.5),  main="ACF of Cow Temp")
+pacf(coal, ylim=c(-0.2,0.5), main="PACF of Cow Temp")
+
+dcoal <- diff(coal)
+par(mfrow=c(1,3))
+plot(dcoal, main="TS of annual bituminous coal production levels")
+acf(dcoal, 20, xlim=c(1,20), ylim=c(-0.2,0.5),  main="ACF of coal production levels")
+pacf(dcoal, ylim=c(-0.2,0.5), main="PACF of coal production levels")
+
+
+fit2<-sarima(dcoal, 0,0,1)
+
+par(mfrow=c(1,1))
+qqnorm((fit2$fit)$resid)
+qqline((fit2$fit)$resid, col="red")
+
+```
+An MA(1) model was the best I could find, though none of the models I tried fit this data well.  There is still a trend in the data, but the Q-Q plot is mostly normal.  The data was differenced again since the initial time series was not stationary.  It may be needed to take a second difference of this data.

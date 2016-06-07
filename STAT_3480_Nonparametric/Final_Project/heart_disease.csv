@@ -1,0 +1,56 @@
+State,Region,Division,Rate,Age-adjusted rate
+Alabama,South,East_South_Central,258.0,228.4
+Alaska,West,Pacific,96.0,135.0
+Arizona,West,Mountain,162.3,141.1
+Arkansas,South,West_South_Central,249.3,214.1
+California,West,Pacific,157.3,151.8
+Colorado,West,Mountain,122.5,125.7
+Connecticut,Northeast,New_England,197.2,148.9
+Delaware,South,South_Atlantic,201.0,168.0
+District of Columbia,South,South_Atlantic,207.3,213.5
+Florida,South,South_Atlantic,218.2,149.8
+Georgia,South,South_Atlantic,165.6,178.7
+Hawaii,West,Pacific,179.6,139.0
+Idaho,West,Mountain,154.8,145.4
+Illinois,Midwest,East_North_Central,192.8,170.9
+Indiana,Midwest,East_North_Central,209.6,186.2
+Iowa,Midwest,West_North_Central,226.3,168.8
+Kansas,Midwest,West_North_Central,185.4,156.1
+Kentucky,South,East_South_Central,226.9,203.4
+Louisiana,South,West_South_Central,223.7,214.1
+Maine,Northeast,New_England,211.3,152.3
+Maryland,South,South_Atlantic,189.7,172.7
+Massachusetts,Northeast,New_England,179.6,141.5
+Michigan,Midwest,East_North_Central,244.1,199.8
+Minnesota,Midwest,West_North_Central,142.3,119.6
+Mississippi,South,East_South_Central,257.9,240.0
+Missouri,Midwest,West_North_Central,233.2,194.7
+Montana,West,Mountain,197.4,154.3
+Nebraska,Midwest,West_North_Central,180.9,147.9
+Nevada,West,Mountain,194.8,195.1
+New Hampshire,Northeast,New_England,183.9,148.9
+New Jersey,Northeast,Mid_Atlantic,207.4,170.1
+New Mexico,West,Mountain,164.2,147.1
+New York,Northeast,Mid_Atlantic,224.1,184.8
+North Carolina,South,South_Atlantic,181.1,165.3
+North Dakota,Midwest,West_North_Central,191.0,150.7
+Ohio,Midwest,East_North_Central,232.3,187.9
+Oklahoma,South,West_South_Central,252.5,228.5
+Oregon,West,Pacific,166.0,135.1
+Pennsylvania,Northeast,Mid_Atlantic,247.6,179.0
+Rhode Island,Northeast,New_England,224.8,163.4
+South Carolina,South,South_Atlantic,202.1,180.0
+South Dakota,Midwest,West_North_Central,192.9,150.1
+Tennessee,South,East_South_Central,227.9,204.1
+Texas,South,West_South_Central,152.0,170.7
+Utah,West,Mountain,114.6,149.0
+Vermont,Northeast,New_England,194.7,149.6
+Virginia,South,South_Atlantic,165.4,157.2
+Washington,West,Pacific,151.0,138.2
+West Virginia,South,South_Atlantic,251.6,193.7
+Wisconsin,Midwest,East_North_Central,107.9,159.3
+Wyoming,West,Mountain,161.2,152.4
+Puerto Rico,Other,Territory,140.0,113.5
+Guam,Other,Territory,176.5,270.5
+American Samoa,Other,Territory,62.1,123.6
+Northern Marianas,Other,Territory,74.3,182.2

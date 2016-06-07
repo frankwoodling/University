@@ -1,0 +1,151 @@
+---
+title: "Homework Problem 5.3"
+author: "Frank Woodling"
+date: "April 22, 2016"
+output: pdf_document
+---
+# 1.
+# a.
+```{r}
+age <- c(3, 7, 15, 24, 85, 180, 360)
+strength <- c(2500, 3200, 4300, 5300, 5900, 6700, 6900)
+
+plot(age, strength, main = "Plot of concrete cylinder age (days) vs strength")
+```
+
+```{r}
+# Pearson's correlation
+x_bar = mean(age)
+y_bar = mean(strength)
+
+num = 0
+denom_x = 0
+denom_y = 0;
+
+for(i in 1:length(age))
+{
+  num = num + (age[i]-x_bar)*(strength[i]-y_bar)
+  denom_x = denom_x + (age[i]-x_bar)^2
+  denom_y = denom_y + (strength[i]-y_bar)^2
+}
+
+r = num/sqrt(denom_x*denom_y)
+```
+$\frac{\sum^n_{i=1}(X_{i}-\overline{X})(Y_{i}-\overline{Y})}{\sqrt{\sum^n_{i=1}(X_{i}-\overline{X})^2\sum^n_{i=1}(Y_{i}-\overline{Y})^2}}$ = 0.7858418
+
+
+```{r}
+# Spearman's correlation
+cor(age, strength, method = "spearman")
+```
+
+
+```{r}
+# Kendall's Tau
+cor(age, strength, method = "kendall")
+```
+
+
+
+# b.
+
+```{r}
+source("http://www4.stat.ncsu.edu/~lu/ST505/Rcode/functions-Ch5.R")
+
+		#####################################
+		#  Permutation test for rho/beta1   #
+		#####################################
+x <- age 
+y <- strength 
+
+### direct function for calculating the sample correlation: r
+(r = cor(x,y))
+
+### least squares coefficient estimates
+(lm(y~x))
+
+#### calculate r and beta1hat manually:
+(sumx = sum(x))
+(sumy = sum(y))
+(sumxy = sum(x*y))
+(sumxx = sum(x^2))
+(sumyy = sum(y^2))
+
+(n = length(x))
+xbar = sumx/n
+ybar = sumy/n
+Sxy = 1/(n-1)*(sumxy - n*xbar*ybar)
+Sx2 = 1/(n-1)*(sumxx - n*xbar^2)
+Sy2 = 1/(n-1)*(sumyy - n*ybar^2)
+Sx = sqrt(Sx2)
+Sy = sqrt(Sy2)
+
+(robs = Sxy/(Sx*Sy))
+(bhat1.obs = Sxy/(Sx2))
+
+### Test H0:r=0 versu Ha:r>0
+
+##
+##### t-test assuming normality
+##
+tt = sqrt((n-2)/(1-robs^2))*robs
+1-pt(tt,n-2)
+
+##
+##### large sample approximation
+##
+(Zr = sqrt(n-1)*r)
+1-pnorm(Zr)
+
+permr <- perm.approx.r(x,y,1000)
+mean(permr >= robs)
+mean(abs(permr) >= abs(robs))
+```
+
+```{r}
+		#####################################
+		#  Spearman Correlation (ties)      #
+		#####################################
+
+x = age  
+y = strength 
+
+(x = rank(x))  ###no need for this data as they are already ranked
+(y = rank(y))
+
+## Spearman correlation
+(rs.obs = cor(x, y))
+
+## permutation test for the Spearman correlation
+permr <- perm.approx.r(x, y, 1000)
+mean(permr >= rs.obs)
+mean(abs(permr) >= abs(rs.obs))
+
+
+
+##### data set: scores of ten projects at a Science Fair (Table 5.2.2 of Higgins)
+(x = rank(x))
+(y = rank(y))
+
+## Spearman correlation
+(rs.obs = cor(x, y))
+
+## permutation test for the Spearman correlation
+permr <- perm.approx.r(x, y, 1000)
+mean(permr >= rs.obs)
+mean(abs(permr) >= abs(rs.obs))
+```
+
+```{r}
+# Kendall's Tau
+x=age
+y=strength
+
+tauobs <- getTau(x,y)
+tauobs
+
+permtau <- perm.approx.tau(x,y,1000)
+mean(permtau >= tauobs)
+```
+
+

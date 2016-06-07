@@ -1,0 +1,88 @@
+---
+title: "Homework 12"
+author: "Frank Woodling"
+date: "May 10, 2016"
+output: pdf_document
+---
+
+# 1.
+# a.
+```{r}
+x<-ts(scan("lead.dat"))
+y<-ts(scan("sales.dat"))
+
+dx<-diff(x)
+dy<-diff(diff(y))
+
+ccf(dx,dy, main = "CCF of sales vs future sales")
+```
+There are significant correlations at lags -2, -3, and -4.  There is also a significant lag at -14, but I will not add this one to the model.
+
+
+# b.
+```{r}
+dx2<-lag(dx,-2)
+dx3<-lag(dx,-3)
+dx4<-lag(dx,-4)
+a<-cbind(dy,dx2,dx3,dx4)
+
+result<-lm(dy~dx2+dx3+dx4,data=a,na.action=na.omit)
+
+summary(result)
+
+par(mfrow=c(2,1))
+acf(result$residuals, main = "ACF of residuals")
+pacf(result$residuals, main = "PACF of residuals")
+```
+The estimates for dx2 and dx3 and significant while the coefficient for dx1 is not.  This is not indicative of white noise since there are many significant lags in both the ACF and PACF.
+
+
+# c.
+```{r}
+library(TSA)
+xy<-ts.intersect(as.ts(dx),as.ts(dy))
+
+par(mfrow=c(1,1))
+prewhiten(as.vector(xy[,1]),as.vector(xy[,2]), main="CCF of Prewhitened Data")
+```
+A CCF is affected by common trends between the two datasets.  Prewhitening allows us to remove those trends.
+
+
+# d.
+```{r}
+dx3<-lag(dx,-3)
+dx4<-lag(dx,-4)
+dx5<-lag(dx,-5)
+b<-cbind(dy,dx3,dx4,dx5)
+result2<-lm(dy~dx3+dx4+dx5,data=b,na.action=na.omit)
+
+par(mfrow=c(2,1))
+acf(result2$residuals, main = "ACF of residuals")
+pacf(result2$residuals, main = "PACF of residuals")
+```
+After the first lag in both the ACF and PACF there is a pattern, but none are significant aside from lag 3 in the PACF.  This could be considered white noise.
+
+
+# e.
+```{r}
+dy<-b[4:148,1]
+dx3<-b[4:148,2]
+dx4<-b[4:148,3]
+dx5<-b[4:148,4]
+
+result.arma<-arima(dy,order=c(3,0,2),xreg=data.frame(dx3, dx4, dx5))
+result.arma$aic
+
+result.arma2<-arima(dy,order=c(2,0,1),xreg=data.frame(dx3, dx4, dx5))
+result.arma2$aic
+
+result.arma3<-arima(dy,order=c(1,0,1),xreg=data.frame(dx3, dx4, dx5))
+result.arma3$aic
+
+r<-residuals(result.arma)
+r<-r[2:145]
+par(mfrow=c(2,1))
+acf(r, main="ACF of Residuals")
+pacf(r, main="PACF of Residuals")
+```
+The final regression equation would include dx3, dx4, and dx5, and it would be an ARMA(3,2) model.

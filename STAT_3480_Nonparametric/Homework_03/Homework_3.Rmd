@@ -1,0 +1,109 @@
+---
+title: "Homework 3"
+author: "Frank Woodling"
+date: "April 19, 2016"
+output: pdf_document
+---
+
+# 4.07
+# a.
+
+```{r}
+source("http://www4.stat.ncsu.edu/~lu/ST505/Rcode/functions-Ch4.R")
+
+x = c(1.5, 2.1, 1.9, 2.8, 1.4, 1.8,
+      1.8, 2.0, 2.0, 2.7, 1.6, 2.3,
+      1.9, 2.5, 2.5, 2.6, 2.1, 2.4)
+
+blocks = rep(1:6,3)
+grps = c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3)
+
+#F-test
+# summary(aov(x~factor(grps)+factor(blocks)))
+
+#  Permutation Test for RCBD
+### Step 1: calculate observed SSTM:sum of squared group-means
+SSTMobs <- getSSTM(x,grps)
+
+### Step 2: obtain the permutation distribution of SSTM under H0
+###             i.e. obtain SSTM*'s with R permutations
+
+permSSTM <- perm.approx.RCBD(x,grps,blocks,R=1000)
+
+### Step3: calculate the p-value
+(pval = mean(permSSTM >= SSTMobs))
+```
+With a p-value of 0.026 we can reject the null hypothesis.  At least one treatment is different from the others.
+
+
+# b.
+```{r}
+anova(aov(x~factor(grps)+factor(blocks)))
+```
+Using the ANOVA we can reject the null hypothesis with a 0.012927 p-value.  This is higher than the previous part, but still within the rejection range.
+
+
+
+# 4.09
+```{r}
+x = c(1.5, 2.1, 1.9, 2.8, 1.4, 1.8,
+      1.8, 2.0, 2.0, 2.7, 1.6, 2.3,
+      1.9, 2.5, 2.5, 2.6, 2.1, 2.4)
+
+blocks = rep(1:6,3)
+grps = c(1,1,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3)
+
+mat <- cbind(x,grps,blocks)
+### sort by the blocks
+mat <- mat[order(mat[,3]),]
+
+#obtain the within-block ranks
+Rij = rankinblock(x,blocks)
+
+#calculate observed SSTM:sum of squared group-means of within-block ranks
+SSTMobs <- getSSTM(Rij,grps)
+
+##obtain the permutation distribution of SSTM (based on within-block ranks)
+set.seed(12379901)
+permSSTM <- perm.approx.RCBD(Rij,grps,blocks,1000)
+(pval=mean(permSSTM >= SSTMobs))
+
+### Use the R function: Friedman rank sum test with unreplicated blocked data
+friedman.test(x, grps, blocks)  ### based on chi-square approximation
+
+#### an alternative (manual) way to calculate the Friedman test statistic
+Ri = getmeans(Rij, grps)
+K = length(unique(grps))
+J = length(unique(blocks))
+
+# calculate Sbj2: sample variance of the ranks within block j
+Sbj2 = apply(matrix(Rij, ncol=J, byrow=T),2,var)
+(FM = J^2/sum(Sbj2)*sum((Ri - (K+1)/2)^2))
+```
+With a p-value of 0.1146 we fail to reject the null hypothesis.  The treatments are equal to each other.
+
+
+# 4.11
+```{r}
+x = c(6.81, 6.16, 5.92, 5.86, 5.80, 5.39,
+      6.68, 6.30, 6.12, 5.71, 6.09, 5.28,
+      6.34, 6.22, 5.90, 5.38, 5.20, 5.46,
+      6.68, 5.24, 5.83, 5.49, 5.37, 5.43,
+      6.79, 6.28, 6.23, 5.85, 5.56, 5.38,
+      6.85, 6.51, 5.95, 6.06, 6.31, 5.39)
+blocks = rep(1:6, 6)
+grps = rep(1:6, each=6)
+dat = matrix(x, byrow=T, ncol=6)
+
+getsums(rankinblock(x,blocks), grps)
+(Pageobs <- getPage(x, grps,blocks))
+
+permPage <- perm.approx.Page(x,grps,blocks,1000)
+# tests if means are arranged t1 > t2 > t3 > t4, i.e. response decreases as changing trt from 1 to 4
+(pval = mean(permPage >= Pageobs))
+```
+With a p-value of 0.003 we can reject the null hypothesis.  At least one treatment is different than the others. The pH level of at least one of the carcasses decreases at a different rate than the others.
+
+
+
+

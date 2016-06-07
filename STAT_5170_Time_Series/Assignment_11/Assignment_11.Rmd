@@ -1,0 +1,56 @@
+---
+title: "Assignment 11"
+author: "Frank Woodling"
+date: "May 3, 2016"
+output: pdf_document
+---
+
+# 1.
+# a.
+```{r}
+gas <- ts(scan("gas82.dat"))
+oil <- ts(scan("oil82.dat"))
+
+result = summary(lm(oil~gas))
+```
+The estimated intercept is at 32.3514 and the slope is at 0.8245 with standard errors 3.82 and 0.0162 respectively.
+
+# b.
+```{r}
+par(mfrow=c(2,1))
+acf(residuals(result), main="ACF of non-transformed regression")
+pacf(residuals(result), main="PACF of non-transformed regression")
+```
+The first lag PACF plot indicates that we should try an AR(1) model.  We can also see that the residuals are correlated.
+
+
+# c.
+```{r}
+ar1 = arima(residuals(result),c(1,0,0), include.mean = F)
+ar1
+```
+The coefficient for an AR(1) model is 0.8368 with a standard error of 0.0611 and AIC of 525. By setting include.mean to false we can set the intercept equal to 0.
+
+# d.
+```{r}
+oil.mat<-cbind(as.ts(oil), lag(oil,-1))
+gas.mat<-cbind(as.ts(gas), lag(gas,-1))
+
+oil.new <-oil.mat[,1] - ar1$coef*oil.mat[,2]
+gas.new<- gas.mat[,1] - ar1$coef*gas.mat[,2]
+
+result.2 = summary(lm(oil.new~gas.new))
+
+par(mfrow=c(2,1))
+acf(residuals(result.2), main="ACF of transformed regression")
+pacf(residuals(result.2), main="PACF of transformed regression")
+```
+The new ACF and PACF achieve stationarity quickly.  The residuals are not correlated anymore.  The model is a much better fit than before.
+# e.
+```{r}
+ar1.2 = arima(residuals(result.2),c(1,0,0), include.mean = F)
+ar1.2
+```
+The new AR(1) coefficents are 0.0532 with a 0.1107 standard error.  We can trust the standard error in part d since the ACF shows no correlation.  We can not trust the standard error in part a.  In order to trust it the model must meet certain assumptions such as no correlation in the residuals.
+
+
